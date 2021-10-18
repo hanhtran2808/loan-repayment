@@ -1,5 +1,8 @@
 <?php
 
+use Flipbox\LumenGenerator\LumenGeneratorServiceProvider;
+use Laravel\Passport\PassportServiceProvider;
+
 require_once __DIR__.'/../vendor/autoload.php';
 
 (new Laravel\Lumen\Bootstrap\LoadEnvironmentVariables(
@@ -19,13 +22,13 @@ date_default_timezone_set(env('APP_TIMEZONE', 'UTC'));
 |
 */
 
-$app = new Laravel\Lumen\Application(
+$app = new \Dusterio\LumenPassport\Lumen7Application(
     dirname(__DIR__)
 );
 
-// $app->withFacades();
+ $app->withFacades();
 
-// $app->withEloquent();
+ $app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +63,8 @@ $app->singleton(
 */
 
 $app->configure('app');
+$app->configure('auth');
+$app->configure('repository');
 
 /*
 |--------------------------------------------------------------------------
@@ -76,9 +81,10 @@ $app->configure('app');
 //     App\Http\Middleware\ExampleMiddleware::class
 // ]);
 
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
+ $app->routeMiddleware([
+     'auth' => App\Http\Middleware\Authenticate::class,
+     'scopes' => \App\Http\Middleware\CheckAuthenticate::class,
+ ]);
 
 /*
 |--------------------------------------------------------------------------
@@ -91,9 +97,14 @@ $app->configure('app');
 |
 */
 
-// $app->register(App\Providers\AppServiceProvider::class);
-// $app->register(App\Providers\AuthServiceProvider::class);
+ $app->register(App\Providers\AppServiceProvider::class);
+ $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
+// add lumen-generator to support generate key,model,...
+$app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);
+// Finally register two service providers - original one and Lumen adapter
+$app->register(Laravel\Passport\PassportServiceProvider::class);
+$app->register(Dusterio\LumenPassport\PassportServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -105,6 +116,7 @@ $app->configure('app');
 | can respond to, as well as the controllers that may handle them.
 |
 */
+\Dusterio\LumenPassport\LumenPassport::routes($app, ['prefix' => 'auth']);
 
 $app->router->group([
     'namespace' => 'App\Http\Controllers',

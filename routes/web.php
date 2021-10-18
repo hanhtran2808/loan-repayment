@@ -13,6 +13,35 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
+use App\Constants\CommonConstant;
+
+
+/**
+ * login
+ */
+$router->group(['prefix' => 'user'], function () use ($router) {
+    /**
+     * login system
+     */
+    $router->post('/auth', 'LoginController@createToken');
+    $router->post('/auth/token', 'Auth\AuthenticationController@issueToken');
+});
+/**
+ * Authentication group
+ */
+$router->group(['middleware' => ['auth:' . CommonConstant::AUTH_GUARD_USER, 'scopes:' . CommonConstant::AUTH_GUARD_USER]], function () use ($router) {
+    $router->group(['prefix' => 'loan'], function () use ($router) {
+        /**
+         * create loan request
+         */
+        $router->post('/create', 'LoanController@createLoanRequest');
+        /**
+         * update loan request
+         */
+        $router->post('/update', 'LoanController@updateLoanRequest');
+        /**
+         * repay loan
+         */
+        $router->post('/repay', 'LoanController@repayLoan');
+    });
 });

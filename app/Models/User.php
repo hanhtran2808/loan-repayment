@@ -2,32 +2,52 @@
 
 namespace App\Models;
 
+use App\Constants\TableConstant;
+use Exception;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Lumen\Auth\Authorizable;
+use Laravel\Passport\HasApiTokens;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract
 {
-    use Authenticatable, Authorizable, HasFactory;
+    use HasApiTokens, Authenticatable, Authorizable, HasFactory;
+
+    protected $guarded = [];
+    protected $table = TableConstant::USER_TABLE_NAME;
+    protected $hidden = ["password"];
+    protected $keyType = 'string';
 
     /**
-     * The attributes that are mass assignable.
+     * Indicates if the IDs are auto-incrementing.
      *
-     * @var array
+     * @var bool
      */
-    protected $fillable = [
-        'name', 'email',
-    ];
+    public $incrementing = false;
+
 
     /**
-     * The attributes excluded from the model's JSON form.
+     * Find the user identified by the given $identifier.
      *
-     * @var array
+     * @param $identifier email
+     * @return mixed
      */
-    protected $hidden = [
-        'password',
-    ];
+    public function findForPassport($identifier)
+    {
+        try {
+            $user = User::where(
+                function ($q) use ($identifier) {
+                    $q->where('email', $identifier);
+                }
+            )
+                ->first();
+            return $user;
+        } catch (Exception $ex) {
+            // write log to tracking error
+            return null;
+        }
+    }
 }

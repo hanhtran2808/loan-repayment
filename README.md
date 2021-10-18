@@ -1,24 +1,38 @@
-# Lumen PHP Framework
+# Loan API
+## Instruction use to API
+### Require server environment
+1. php >= 7.4
+2. mysql 5.7|8.0
+3. composer
 
-[![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework)
-[![Total Downloads](https://img.shields.io/packagist/dt/laravel/framework)](https://packagist.org/packages/laravel/lumen-framework)
-[![Latest Stable Version](https://img.shields.io/packagist/v/laravel/framework)](https://packagist.org/packages/laravel/lumen-framework)
-[![License](https://img.shields.io/packagist/l/laravel/framework)](https://packagist.org/packages/laravel/lumen-framework)
+### Usage API (step by step)
+Note: After get source from git, use command line into the project
+1. CLI: cd {project name}
+2. Run composer install
+    CLI: composer install
+3. copy file .env.example to .env
+    CLI: cp .env.example .env
+4. Generate app key
+    CLI: php artisan key:generate
+5. Open .env file to set up Database connection
+    DB_CONNECTION={DB connection}
+    DB_HOST={DB host}
+    DB_PORT={DB port}
+    DB_DATABASE={DB name}
+    DB_USERNAME={account access DB}
+    DB_PASSWORD={Password of account}
+6. After API has connected database successfully. Run command line to create database structure
+    Run CLI: php artisan migrate
+7. Run this command line to generate client ID and secret ID when using passport
+   - Run CLI: php artisan passport:install 
+   - Open .env file to add more keys:
+    API_GET_TOKEN=/user/auth/token
+    PASSPORT_CLIENT_ID={get value of column 'id' into 'oauth_clients' table. NOTE: get record with name column has contain ' Grant Client'}
+    PASSPORT_CLIENT_SECRET={get value of column 'secret' into 'oauth_clients' table. NOTE: get record with name column has contain ' Grant Client'}
+    GRANT_TYPE_PASSWORD=password
+8. Run command line to generate data in database
+    - Run CLI: php artisan db:seed --class=UserSeeder
 
-Laravel Lumen is a stunningly fast PHP micro-framework for building web applications with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Lumen attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as routing, database abstraction, queueing, and caching.
+    
+    
 
-## Official Documentation
-
-Documentation for the framework can be found on the [Lumen website](https://lumen.laravel.com/docs).
-
-## Contributing
-
-Thank you for considering contributing to Lumen! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Lumen, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Lumen framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
